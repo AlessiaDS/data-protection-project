@@ -1,3 +1,5 @@
+import combination
+
 def anonymize(self, qi_names: list, k: int, output_path: str, v=True):
     """
     Writes a k-anonymous representation of this table on a new file. The maximum number of
@@ -71,12 +73,16 @@ def anonymize(self, qi_names: list, k: int, output_path: str, v=True):
         # Limit the number of tuples to suppress to k:
         if count > k:
             # TODO: modify not cardinality but top bottom breath search!!!!!!!!!!!!!!!!!!
+
             # Get the attribute whose domain has the max cardinality:
+            '''   
             max_cardinality, max_attribute_idx = 0, None
             for attribute_idx in domains:
                 if len(domains[attribute_idx]) > max_cardinality:
                     max_cardinality = len(domains[attribute_idx])
                     max_attribute_idx = attribute_idx
+            '''
+            comb = combination.combination()
 
             # Index of the attribute to generalize:
             attribute_idx = max_attribute_idx
@@ -93,6 +99,13 @@ def anonymize(self, qi_names: list, k: int, output_path: str, v=True):
 
             # Note: using the list of keys since the dictionary is changed in size at runtime
             # and it can't be used an iterator:
+            #for qi_seq
+            # 0 qui_sequence = row0 a1, a2, a3
+            # tmp = comb.pop() (0,0,0)
+            # if primo elemento in tupla
+            # if
+            # qi[a1] -> gen(a1)
+            # 1 qui...
             for j, qi_sequence in enumerate(list(qi_frequency)):
 
                 # Get the generalized value:
