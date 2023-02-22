@@ -1,3 +1,6 @@
+> I file usati e modificati in data 22/02/23 sono stati messi in "temp" nel caso qualcuno volesse già dargli un'occhiata. 
+> Verranno riorganizzati nei giorni a seguire.
+
 ## Anon-Comb
 
 > Sono già nei piani dei cambi/aggiustamenti da fare, ad esempio l'ordine di inserimento dei livelli nelle tuple e l'aggiunta di una variabile che terrà a parte la tabella originaria, cose alle quali non ci avevo fatto caso prima.
