@@ -1,0 +1,200 @@
+id,age,sex,zip_code,disease
+1,55,M,25049,Cancer
+2,50,M,16151,AIDS
+3,17,M,73015,AIDS
+4,8,M,19028,Autism
+5,40,F,58014,Autism
+6,41,F,13884,Autism
+7,57,M,86070,AIDS
+8,59,F,85020,Autism
+9,60,Fi,87045,Autism
+10,70,M,34010,Heart disease
+11,51,F,98074,Alzheimer's disease
+12,56,F,27020,Heart disease
+13,53,M,38077,Anorexia
+14,40,M,56017,Heart disease
+15,25,F,41028,Autism
+16,11,M,15060,Anorexia
+17,2,F,53030,Heart disease
+18,11,F,39010,Cancer
+19,89,M,16167,Heart disease
+20,12,M,00020,Autism
+21,9,M,25019,Cancer
+22,29,M,39056,Heart disease
+23,56,F,74020,Anorexia
+24,70,F,39028,Autism
+25,18,M,86045,Heart disease
+26,38,F,37137,Alzheimer's disease
+27,62,F,90049,AIDS
+28,13,F,39011,Autism
+29,53,M,16010,AIDS
+30,42,F,00152,Anorexia
+31,32,M,51100,AIDS
+32,37,M,39010,Anorexia
+33,49,F,56020,Heart disease
+34,94,F,87040,AIDS
+35,87,M,08030,Alzheimer's disease
+36,17,M,16030,Autism
+37,53,M,61037,AIDS
+38,65,F,27023,Autism
+39,7,F,21010,Heart disease
+40,44,M,81028,AIDS
+41,53,F,33100,Alzheimer's disease
+42,63,F,71027,Anorexia
+43,75,M,01020,AIDS
+44,33,M,90040,Autism
+45,14,F,17014,Anorexia
+46,79,M,81037,Heart disease
+47,68,F,60044,Alzheimer's disease
+48,63,M,82020,Anorexia
+49,49,F,23035,AIDS
+50,18,F,96010,Cancer
+51,70,M,38060,Anorexia
+52,39,M,51016,Heart disease
+53,7,F,84052,Anorexia
+54,4,F,30014,Alzheimer's disease
+55,28,M,38078,Heart disease
+56,68,F,25061,Anorexia
+57,89,M,88040,AIDS
+58,52,F,90131,Heart disease
+59,15,F,41036,Anorexia
+60,93,M,33021,Autism
+61,9,F,98157,Alzheimer's disease
+62,41,M,82030,Autism
+63,78,M,39030,Cancer
+64,87,M,29023,Autism
+65,1,M,30030,AIDS
+66,15,F,26010,Anorexia
+67,85,F,39040,Autism
+68,25,F,00011,Cancer
+69,47,F,26010,Heart disease
+70,84,M,08013,Anorexia
+71,36,F,62012,Alzheimer's disease
+72,46,F,37060,Heart disease
+73,91,M,28841,Anorexia
+74,69,M,90049,Alzheimer's disease
+75,31,M,26857,Alzheimer's disease
+76,98,F,73040,Anorexia
+77,89,F,66034,Cancer
+78,35,M,88041,Autism
+79,2,M,02016,Cancer
+80,4,F,67013,Heart disease
+81,1,F,40051,Heart disease
+82,19,F,12047,Anorexia
+83,83,F,08012,Anorexia
+84,47,M,01019,Alzheimer's disease
+85,35,F,58100,Anorexia
+86,65,F,39023,Anorexia
+87,94,M,88040,Cancer
+88,29,M,38100,AIDS
+89,17,F,98070,Cancer
+90,8,F,15050,Alzheimer's disease
+91,94,M,87046,Heart disease
+92,94,F,15040,Heart disease
+93,94,M,16030,Autism
+94,77,F,57032,Heart disease
+95,73,F,09028,Alzheimer's disease
+96,96,M,02010,Cancer
+97,34,F,15010,Autism
+98,33,M,41038,Anorexia
+99,11,M,94012,Heart disease
+100,21,F,30126,Autism
+101,53,M,38032,Alzheimer's disease
+102,24,F,25065,Alzheimer's disease
+103,26,F,89900,Alzheimer's disease
+104,87,M,28813,Anorexia
+105,26,M,87050,Cancer
+106,36,F,38030,Heart disease
+107,82,F,60037,AIDS
+108,52,F,47012,AIDS
+109,68,F,09122,Autism
+110,80,M,83023,Heart disease
+111,66,M,56021,Autism
+112,11,F,36010,Autism
+113,48,F,20097,Alzheimer's disease
+114,89,M,67013,Heart disease
+115,50,M,18038,Cancer
+116,72,F,14020,Heart disease
+117,4,F,61040,Alzheimer's disease
+118,85,F,22010,AIDS
+119,51,F,19032,AIDS
+120,91,M,09080,Heart disease
+121,69,F,05035,AIDS
+122,53,M,98060,Cancer
+123,22,F,08030,Alzheimer's disease
+124,73,M,83041,Heart disease
+125,19,M,33080,AIDS
+126,56,M,09047,Heart disease
+127,11,M,89029,Cancer
+128,88,F,52010,AIDS
+129,54,F,38075,Heart disease
+130,100,F,11022,Cancer
+131,5,M,10040,Alzheimer's disease
+132,59,M,90134,Autism
+133,59,F,23890,Anorexia
+134,85,F,37032,AIDS
+135,66,M,22040,AIDS
+136,99,F,28041,Heart disease
+137,86,M,58031,Heart disease
+138,38,F,06024,Anorexia
+139,71,M,11010,Cancer
+140,19,F,28100,Alzheimer's disease
+141,30,F,16010,Heart disease
+142,81,M,66041,Alzheimer's disease
+143,88,M,19133,Heart disease
+144,60,F,66026,AIDS
+145,73,F,98030,Cancer
+146,30,M,26835,AIDS
+147,76,F,74024,AIDS
+148,58,F,75015,Cancer
+149,55,F,12070,Alzheimer's disease
+150,76,M,52100,Autism
+151,42,M,19020,Anorexia
+152,46,F,23020,Heart disease
+153,39,F,54013,Cancer
+154,56,M,33087,Heart disease
+155,8,M,28010,AIDS
+156,15,F,33010,Heart disease
+157,69,F,07021,Cancer
+158,66,M,44011,Cancer
+159,70,F,64100,AIDS
+160,31,F,33040,Anorexia
+161,72,F,31040,Autism
+162,71,M,60015,AIDS
+163,69,M,74016,Autism
+164,32,F,20836,Anorexia
+165,52,F,63061,Cancer
+166,94,F,16040,Heart disease
+167,4,M,81040,Anorexia
+168,64,M,84022,Alzheimer's disease
+169,63,F,41055,Alzheimer's disease
+170,57,M,18020,Heart disease
+171,58,F,21032,AIDS
+172,40,F,88042,Cancer
+173,97,M,83030,Anorexia
+174,77,F,39057,Heart disease
+175,30,M,39021,AIDS
+176,67,F,80041,Cancer
+177,30,M,60011,Heart disease
+178,96,M,12074,Cancer
+179,55,F,35020,Autism
+180,71,F,40054,AIDS
+181,66,M,03022,Anorexia
+182,92,F,06049,AIDS
+183,53,M,63845,Heart disease
+184,39,M,54016,Autism
+185,78,F,13821,AIDS
+186,72,M,81030,Anorexia
+187,35,M,86011,Anorexia
+188,71,F,64010,Heart disease
+189,75,M,85044,Autism
+190,62,M,55047,Heart disease
+191,25,F,90100,Heart disease
+192,66,F Di Brenta,38092,AIDS
+193,40,M,83054,Cancer
+194,31,F,81057,Alzheimer's disease
+195,44,M,02043,Anorexia
+196,15,F,89040,Heart disease
+197,58,M,10050,Autism
+198,36,F,66030,Alzheimer's disease
+199,15,M,13881,AIDS
