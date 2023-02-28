@@ -3,7 +3,7 @@
     + Merged `combination` and `recursiveComb`, now `combination` will use the function `product` from `itertools`
     + ~~Added `get_tree_height` to `Node` in order to get the heights of the trees of generalization of the ___QIs___, development needed to make it work~~
         + `get_tree_height` changed to `getTreeHeight`, moved from `Node` to `CsvDGH` and now is working as intended
-        + ~~Forgot to delete `get_tree_height` from `Node`, will update it as soon as i can~~
+        + ~~Forgot to delete `get_tree_height` from `Node`, will update it as soon as i can~~ Done
 + Changelog 2
     + Added function `combination` to get a list of touples that will specify the generalization level of the ___QIs___ during the generation of generalized tables
     + Added function `recursiveComb` to make `combination` work for any number of ___QIs___
@@ -20,6 +20,7 @@
 + Complete review (and possible improvements) of `anonymize`
 + Improvement of `getTreeHeight` (the function can still be used like the current version, only it's implementation will change)
 + Selection of the ___K-Anon Minimum table___ between the candidates
++ Start process of testing and work on fixes if needed
 + Update the `README.md` documentation after the needed changes are applied, or if needed to be able to get a grasp of certain variables/functions/synergies
 
 ## Anon-Comb
