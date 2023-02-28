@@ -1,11 +1,28 @@
-> I file usati e modificati in data 22/02/23 sono stati messi in "temp" nel caso qualcuno volesse già dargli un'occhiata. 
-> Verranno riorganizzati nei giorni a seguire.
+## Changelog
++ Changelog 3
+    + Merged `combination` and `recursiveComb`, now `combination` will use the function `product` from `itertools`
+    + ~~Added `get_tree_height` to `Node` in order to get the heights of the trees of generalization of the ___QIs___, development needed to make it work~~
+        + `get_tree_height` changed to `getTreeHeight`, moved from `Node` to `CsvDGH` and now is working as intended
+        + ~~Forgot to delete `get_tree_height` from `Node`, will update it as soon as i can~~
++ Changelog 2
+    + Added function `combination` to get a list of touples that will specify the generalization level of the ___QIs___ during the generation of generalized tables
+    + Added function `recursiveComb` to make `combination` work for any number of ___QIs___
+    + Added variable `combinations` to the function `anonymize`
++ Changelog 1
+    + Corrected concatenation tuple on recursion previous to 0
+    + Removed `domains` (was used for cardinality calc)
+    + Added variable `qi_frequency_candidates` to save the K-Anon tables generated
+    + Added variable `qi_frequency_states` for the many table SaveStates
+    + Added function `resetState` to reset the table to a specific state (needed for Anon)
+    + Added function `recResetState` to make `resetState` work for any number of ___QIs___
+    + Added variable `saveState` to the function `anonymize`
+## TODO
++ Complete review (and possible improvements) of `anonymize`
++ Improvement of `getTreeHeight` (the function can still be used like the current version, only it's implementation will change)
++ Selection of the ___K-Anon Minimum table___ between the candidates
++ Update the `README.md` documentation after the needed changes are applied, or if needed to be able to get a grasp of certain variables/functions/synergies
 
 ## Anon-Comb
-
-> Sono già nei piani dei cambi/aggiustamenti da fare, ad esempio l'ordine di inserimento dei livelli nelle tuple e l'aggiunta di una variabile che terrà a parte la tabella originaria, cose alle quali non ci avevo fatto caso prima.
-> Quindi se si vedono delle parti di codice che restituiscono o fanno qualcosa di diverso da quello descritto quì è perchè mi sono accorto di tali errori solo durante la stesura di questo README.
-> Provvederò a fare i cambi necessari nei giorni a venire, ma nel mentre metto a disposizione questo file per dare del tempo di capire cosa ho scritto e come l'ho implementato.
 
 Visto che si andrà a riutilizzare la maggior parte del codice del laboratorio presente su Aula Web ho optato per riutilizzare parte di tale codice e modificarlo a seconda delle esigenze di Incognito.
 
