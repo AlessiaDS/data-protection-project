@@ -25,20 +25,6 @@ class Tree:
 
         self.root = root
 
-    def get_tree_height(self):
-
-        if len(self.root.children) == 0:
-            return 0
-
-        height = 1
-        node = list(self.root.children)[0]
-
-        while len(node.root.children) != 0:
-            height += 1
-            node = node.root.children[0]
-
-        return height
-
     def bfs_search(self, data, depth=None):
 
         """
