@@ -94,7 +94,7 @@ class CsvDGH(_DGH):
         if len(self.hierarchies) == 0:
             return 0
 
-        tmp = list(self.hierarchies.keys())[1]
+        tmp = list(self.hierarchies.keys())[0]
 
         return self.gen_levels[tmp]
         
