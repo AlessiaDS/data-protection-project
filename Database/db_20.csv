@@ -1,0 +1,21 @@
+id,age,sex,zip_code,disease
+1,55,M,25049,Cancer
+2,50,M,16151,AIDS
+3,17,M,73015,AIDS
+4,8,M,19028,Autism
+5,40,F,58014,Autism
+6,41,F,13884,Autism
+7,57,M,86070,AIDS
+8,59,F,85020,Autism
+9,60,F,87045,Autism
+10,70,M,34010,Heart disease
+11,51,F,98074,Alzheimer's disease
+12,56,F,27020,Heart disease
+13,53,M,38077,Anorexia
+14,40,M,56017,Heart disease
+15,25,F,41028,Autism
+16,11,M,15060,Anorexia
+17,2,F,53030,Heart disease
+18,11,F,39010,Cancer
+19,89,M,16167,Heart disease
+20,12,M,00020,Autism
