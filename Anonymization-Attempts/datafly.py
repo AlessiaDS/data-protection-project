@@ -75,7 +75,6 @@ class _Table:
         except IOError:
             raise
 
-        # Start reading the table file (the one to anonymize) from the top:
         self.table.seek(0)
 
         # Dictionary whose keys are sequences of values for the Quasi Identifiers and whose values
@@ -85,10 +84,10 @@ class _Table:
 
         # List of Tuples that will save the state of the table at specific generalization levels
         # Will be needed to reset the Table to a desirable state while generalizing by following combinations
-        qi_frequency_states = list()  # Es. [0] = 000; [1] = xx0; [2] = x00
+        qi_frequency_states = dict()  # Es. [0] = 000; [1] = xx0; [2] = x00
 
         # List of dictionaries where every iteration of the modified tables will be saved
-        qi_frequency_candidates = dict() # K = Tuple ("a","b","c"), V = qi_frequency related to the combination in K
+        qi_frequency_candidates = dict()  # K = Tuple ("a","b","c"), V = qi_frequency related to the combination in K
 
         # Dictionary whose keys are the indices in the QI attribute names list, and whose values are
         # the current levels of generalization, from 0 (not generalized):
@@ -117,35 +116,39 @@ class _Table:
 
         # ---------------------------START PART 1 - Generalization---------------------------
         # save the state 000 on qi_frequency_states[0]
-        qi_frequency_states[0] = dict(qi_frequency)
+        qi_frequency_states[len(gen_levels) - 1] = dict(qi_frequency)
 
         qi_heights = list()
 
         for i in qi_names:
-            qi_heights.append(range(self.dghs[i].get_tree_height()))
+            tmp = list()
+            for n in range(CsvDGH.get_tree_height(table.dghs[i]) + 1):
+                tmp.append(n)
+            qi_heights.append(tmp)
 
         # create QI_Combination list to follow
-        combinations = combination(qi_heights)  # combination(qi_names,dghs) # return a list of tuple combinations (?)
-
-        print(combinations)
+        combinations = combination(*qi_heights)
 
         for data in combinations:  # data = (gen_lv of atr0, gen_lv of atr1, etc...), es. (0,0,1)
             # qi_frequency_states indexes that will be used to save the state of the table
             # at the end of the generalization
-            saveState = resetState(gen_levels, data, qi_frequency, qi_frequency_states)
+            print("Current <COMB>: ", data)
+
+            saveState = resetState(gen_levels, data, qi_frequency, qi_frequency_states)  # Tupla: (dove salvare lo stato di fine anon corrente, resetState)
+
+            if saveState[0] != -1:
+                qi_frequency = saveState[1]
             # Look up table for the generalized values, to avoid searching in hierarchies:
             generalizations = dict()
             # Generalized value to apply for the needed lables
             generalized_value = dict()
-
             # Note: using the list of keys since the dictionary is changed in size at runtime
             # and it can't be used as an iterator:
             for j, qi_sequence in enumerate(list(qi_frequency)):
-
+                if j == 0: continue
                 # Get the generalized value:
                 for i in range(len(data)):
-                    # If QI is going back to genLv 0 then do nothing since it has already been "rolled back"
-                    # with resetState
+                    # If QI is going back to genLv 0 then do nothing since it has already been "rolled back" with resetState
                     # If old and new level are the same then do nothing once again
                     if data[i] != 0 and data[i] != gen_levels[i]:
                         if qi_sequence[i] in generalizations:
@@ -154,60 +157,67 @@ class _Table:
                         else:
                             # Get the corresponding generalized value from the attribute DGH:
                             try:
-                                generalized_value = self.dghs[qi_names[i]] \
+                                generalized_value[i] = self.dghs[qi_names[i]] \
                                     .generalize(
                                     qi_sequence[i],
                                     gen_levels[i])
                             except KeyError as error:
-                                print(error)
+                                #print("Error: ",error)
                                 output.close()
                                 return
-
                             if generalized_value is None:
                                 # Skip if it's a hierarchy root:
                                 continue
 
                         # Add to the look up table:
                         generalizations[i] = generalized_value[i]
-                        # probably instead of "attribute_idx" you should use "qi_sequence[attribute_idx]"
+
+                # Skip if header of Table
+                if qi_sequence == None: continue
 
                 # Tuple with generalized value:
                 new_qi_sequence = list(qi_sequence)
-                # change only the attributes that needed to be changed ->
-                # the ones with a generalization level different from before
+                # Change only the attributes that need to be changed -> the ones with a generalization level different from before
                 for id, gen_val in generalized_value.items():
                     new_qi_sequence[id] = gen_val
                 new_qi_sequence = tuple(new_qi_sequence)
 
-                # Check if there is already a tuple like this one:
-                if new_qi_sequence in qi_frequency:
-                    # Update the already existing one:
-                    # Update the number of occurrences:
-                    occurrences = qi_frequency[new_qi_sequence][0] \
-                                  + qi_frequency[qi_sequence][0]
-                    # Unite the row indices sets:
-                    rows_set = qi_frequency[new_qi_sequence][1] \
-                        .union(qi_frequency[qi_sequence][1])
-                    qi_frequency[new_qi_sequence] = (occurrences, rows_set)
-                    # Remove the old sequence:
-                    qi_frequency.pop(qi_sequence)
-                else:
-                    # Add new tuple and remove the old one:
-                    qi_frequency[new_qi_sequence] = qi_frequency.pop(qi_sequence)
+                # If start of cycle no need to change or apply anything
+                if data != (0, 0, 0):
+                    # Check if there is already a tuple like this one:
+                    if new_qi_sequence in qi_frequency:
+                        # Update the already existing one:
+                        # Update the number of occurrences:
+                        occurrences = qi_frequency[new_qi_sequence][0] \
+                                      + qi_frequency[qi_sequence][0]
+                        # Unite the row indices sets:
+                        rows_set = qi_frequency[new_qi_sequence][1] \
+                            .union(qi_frequency[qi_sequence][1])
+                        qi_frequency[new_qi_sequence] = (occurrences, rows_set)
+                        # Remove the old sequence:
+                        qi_frequency.pop(qi_sequence)
+                    else:
+                        # Add new tuple and remove the old one:
+                        qi_frequency[new_qi_sequence] = qi_frequency.pop(qi_sequence)
 
             # Update current level of generalization:
             for i in range(len(data)):
                 gen_levels[i] = data[i]
 
             # Saving the current state of the Table in the needed indexes
-            if saveState != -1:
-                for i in saveState:
+            if saveState[0] != -1:
+                for i in saveState[0]:
                     qi_frequency_states[i] = dict(qi_frequency)
 
-            if is_k_anon(qi_frequency,k):
+            if is_k_anon(qi_frequency, k):
                 # Add the current qi_frequency to the list of combination/table candidates
-                suppress_under_k(qi_frequency, k)
                 qi_frequency_candidates[data] = qi_frequency
+
+        # qi_frequency_candidates already contains only generalizations that are K-Anon
+        # So we will start to find the Minimum between them
+        qi_frequency = findMin(qi_frequency_candidates)
+        # And remove the
+        suppress_under_k(qi_frequency, k)
 
         # ---------------------------END PART1 - Generalization---------------------------
 
@@ -217,14 +227,11 @@ class _Table:
 
         # ---------------------------START PART 2 - Write on output file---------------------------
 
-        # Start suppression *ONLY AFTER* having all other tuples at k reps
-        # Popped only from the dictionary and not from the table itself?
-        # And write soon after
         self._debug("[DEBUG] Suppressing max k non k-anonymous tuples...")
         # Drop tuples which occur less than k times:
-        for qi_sequence, data in qi_frequency.items():
+        '''for qi_sequence, data in qi_frequency.items():
             if data[0] < k:
-                qi_frequency.pop(qi_sequence)
+                qi_frequency.pop(qi_sequence)'''
 
         # Start to read the table file from the start:
         self.table.seek(0)
@@ -344,29 +351,32 @@ def is_k_anon(table, k):
     count = 0 # non k-anon touples count
     for key in table:
         if table[key][0] < k:
-            count += 1
+            count += table[key][0]
     return count <= k
 
 # :param table:
 # :param k:
 # suppress every tuple that has a freq lower than k
 def suppress_under_k(table, k):
-    for sequence, data in table:
-        if data[0] < k: table.pop(sequence)
+    count = 0
+    for sequence in tuple(table.keys()):
+        if table[sequence][0] < k:
+            table.pop(sequence)
+            count += 1
+    return count
 
 def findMin(qi_seq):
     gen_min = [sys.maxsize, None]
-    for k, v in qi_seq:
+    for k, v in qi_seq.items():
         weight = sum(k)
         if weight < gen_min[0]:
+            print("[MIN] ",k," is the new Min")
             gen_min[0] = weight
             gen_min[1] = v
-        return gen_min
+    return gen_min[1]
 
-def combination (heights):
-    # es_heights = [[0, 1], [0, 1, 2, 3, 4, 5], [0, 1, 2, 3]] -> [a,b,c]
-    # returns ordered combinations: [[a0,b0,c0],[a0,b0,c1],[a0,b0,c2], ..., [a1, b5, c3]]
-    return list(itertools.product(heights))
+def combination (*heights):
+    return list(itertools.product(*heights))
 
 # old_vars and new_vars refer to the generalization levels
 # current_state is the current state of the table that needs to be resetted
@@ -376,37 +386,41 @@ def combination (heights):
 # might need to handle old_vars (dict) and new_vars (list of tuples) differences
 # not only reset the state but change lvs to corresponding resetted state
 def resetState (old_vars, new_vars, current_state, states_list):
-    if old_vars[0] != 0 and new_vars[0] == 0:
-        return recResetState(1, old_vars, new_vars, current_state, states_list)
+    if old_vars[len(old_vars)-1] != 0 and new_vars[len(new_vars)-1] == 0:
+        return recResetState(len(old_vars)-2, old_vars, new_vars, current_state, states_list)
     else:
-        return  (-1,) #reset state not needed
+        return  ((-1),None) #reset state not needed
 
 def recResetState (current_qi, old_vars, new_vars, current_state, states_list):
-    if current_qi < len(new_vars):
+    if current_qi > 0:
         if old_vars[current_qi] != 0:
             if new_vars[current_qi] == 0:
-                return recResetState(current_qi+1, old_vars, new_vars, current_state, states_list)
+                return recResetState(current_qi-1, old_vars, new_vars, current_state, states_list)
             else:
                 current_state = dict(states_list[current_qi])
 
-        elif new_vars[current_qi+1] == 0:
-            current_state = dict(states_list[0])
+        elif current_qi != 0:
+            if new_vars[current_qi-1] == 0:
+                current_state = dict(states_list[len(old_vars)-1])
+            else:
+                current_state = dict(states_list[current_qi])
         else:
             current_state = dict(states_list[current_qi])
-
-    elif current_qi == len(new_vars):
+    elif current_qi == 0:
         if old_vars[current_qi] != 0:
             if new_vars[current_qi] != 0:
                 current_state = dict(states_list[current_qi])
         else:
-            current_state = dict(states_list[0])
+            current_state = dict(states_list[len(old_vars)-1])
 
-    # will a touple that defines to which indexes save the state of the table after generalization
-    # the index 0 gets skipped because is the origin state [000...0]
-    # might need to define in another way, to check
-    for i in range(1, current_qi + 1):
+    # will generate a touple that defines:
+    # [0] to which indexes save the state of the table after generalization
+    # [1] the state to use for the reset
+    # the index "MAX" gets skipped because is the origin state [000...0]
+    states = tuple()
+    for i in range(current_qi, len(old_vars)-1):
         states = states + (i,)
-    return states
+    return (states,current_state)
 
 class CsvTable(_Table):
 
