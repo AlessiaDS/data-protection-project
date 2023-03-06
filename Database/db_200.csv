@@ -7,7 +7,7 @@ id,age,sex,zip_code,disease
 6,41,F,13884,Autism
 7,57,M,86070,AIDS
 8,59,F,85020,Autism
-9,60,Fi,87045,Autism
+9,60,F,87045,Autism
 10,70,M,34010,Heart disease
 11,51,F,98074,Alzheimer's disease
 12,56,F,27020,Heart disease
@@ -190,7 +190,7 @@ id,age,sex,zip_code,disease
 189,75,M,85044,Autism
 190,62,M,55047,Heart disease
 191,25,F,90100,Heart disease
-192,66,F Di Brenta,38092,AIDS
+192,66,F,38092,AIDS
 193,40,M,83054,Cancer
 194,31,F,81057,Alzheimer's disease
 195,44,M,02043,Anorexia
