@@ -60,6 +60,44 @@ class _DGH:
         # The value is not found:
         raise KeyError(value)
 
+    def generalize_jump(self, value, gen_level, jumps):
+
+        """
+        Returns the upper lever generalization of a value in the domain.
+
+        :param value:       Value to generalize.
+        :param gen_level:   Current level of generalization, where 0 means it's not generalized.
+        :param jumps:       Jumps of generalization that are needed to be done
+        :return:            The generalized value on the level above, None if it's a root.
+        :raises KeyError:   If the value is not part of the domain.
+        """
+
+        # Search across all hierarchies (slow if there are a lot of hierarchies):
+        for hierarchy in self.hierarchies:
+
+            # Try to find the node:
+            if gen_level is None:
+                node = self.hierarchies[hierarchy].bfs_search(value)
+            else:
+                node = self.hierarchies[hierarchy].bfs_search(
+                    value,
+                    self.gen_levels[hierarchy] - gen_level)     # Depth.
+
+            if node is None:
+                continue
+            elif node.parent is None:
+                # The value is a hierarchy root:
+                return None
+            else:
+                current = node
+                for i in range(jumps):
+                    if current.parent is None: return None #return error
+                    current = current.parent
+                return current.data
+
+        # The value is not found:
+        raise KeyError(value)
+
 
 class CsvDGH(_DGH):
 
