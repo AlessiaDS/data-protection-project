@@ -37,7 +37,7 @@ class MyDiGraph(nx.DiGraph):
         return tmp
 
     # criteria to add edge
-    def add_linked_edge(self):
+    def add_linked_edge(self, qi_name):
 
         chars = "({})' "
 
@@ -62,66 +62,39 @@ class MyDiGraph(nx.DiGraph):
         vertices = self.getVertices()
 
         temp_combs = combs.copy()
-#genralizzare per i qi
-        for c in combs:
-            if combs[c].get('s') is not None:
-                temp = combs[c].get('s')
-                temp_combs[c]['s'] = int(temp) + 1
+        for q in qi_name:
+            for c in combs:
+                if combs[c].get(q) is not None:
+                    temp = combs[c].get(q)
+                    temp_combs[c][q] = int(temp) + 1
 
-            combination2add = parsing.reparse_attr(temp_combs[c])
-            combs[c]['s'] = int(temp)
+                combination2add = parsing.reparse_attr(temp_combs[c])
+                combs[c][q] = int(temp)
 
-            for v in vertices:
-                if v == combination2add:
-                    for w in vertices:
-                        if w == c:
-                            self.add_edge(w, v)
-
-            if combs[c].get('a') is not None:
-                temp = combs[c].get('a')
-                temp_combs[c]['a'] = int(temp) + 1
-
-            combination2add = parsing.reparse_attr(temp_combs[c])
-            combs[c]['a'] = int(temp)
-
-            for v in vertices:
-                if v == combination2add:
-                    for w in vertices:
-                        if w == c:
-                            self.add_edge(w , v)
-
-            if combs[c].get('z') is not None:
-                temp = temp_combs[c].get('z')
-                temp_combs[c]['z'] = int(temp) + 1
-
-            combination2add = parsing.reparse_attr(temp_combs[c])
-            combs[c]['z'] = int(temp)
-
-            for v in vertices:
-                if v == combination2add:
-                    for w in vertices:
-                        if w == c:
-                            self.add_edge(w, v)
-
+                for v in vertices:
+                    if v == combination2add:
+                        for w in vertices:
+                            if w == c:
+                                self.add_edge(w, v)
         return
 
 # passo i qi cosi controllo meno
 #cercare metodo per trovare direttamente nodi
 
-
 if __name__ == "__main__":
+    qi_names = ["sex", "age", "zipcode"]
     G = MyDiGraph()
-    G.add_node("s:0;a:0;z:0")
-    G.nodes["s:0;a:0;z:0"]['is_marked'] = False
-    G.add_node("s:1;a:0;z:0")
-    G.nodes["s:1;a:0;z:0"]['is_marked'] = False
-    G.add_node("s:0;a:1;z:0")
-    G.nodes["s:0;a:1;z:0"]['is_marked'] = False
-    G.add_node("s:0;a:2;z:0")
-    G.nodes["s:0;a:2;z:0"]['is_marked'] = False
+    G.add_node("sex:0;age:0;zipcode:0")
+    G.nodes["sex:0;age:0;zipcode:0"]['is_marked'] = False
+    G.add_node("sex:1;age:0;zipcode:0")
+    G.nodes["sex:1;age:0;zipcode:0"]['is_marked'] = False
+    G.add_node("sex:0;age:1;zipcode:0")
+    G.nodes["sex:0;age:1;zipcode:0"]['is_marked'] = False
+    G.add_node("sex:0;age:2;zipcode:0")
+    G.nodes["sex:0;age:2;zipcode:0"]['is_marked'] = False
     # G.nodes[0]['comb'] = "s:0,a:0,z:0"
     # print(G.nodes.data())
     vertexes = G.getVerticesAttributes()
     print(G.getVertices())
-    G.add_linked_edge()
+    G.add_linked_edge(qi_names)
     print(G.getEdges())
