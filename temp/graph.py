@@ -1,3 +1,5 @@
+import itertools
+
 import networkx as nx
 import parsing
 
@@ -20,10 +22,9 @@ class MyDiGraph(nx.DiGraph):
     def addEdge(self, c1, c2):
         return self.add_edge(c1, c2)
 
-    # attrs = {0: {"is_marked": False, "comb": "s:0,a:0,z:0"}}
-    def addVertex(self, node, attr):
-        #self.nodes[node]['isMarked'] = False
-        return self.add_node(node, attr=attr)
+    def addVertex(self, node):
+        self.add_node(node, is_marked=False)
+        return self
 
     # Variant from original hasVertex, returns True or False
     def hasVertex(self, a):
@@ -35,6 +36,22 @@ class MyDiGraph(nx.DiGraph):
             if d == 0:
                 tmp.append(n)
         return tmp
+
+    def add_vertices(self, qi_height, qi_names):
+
+        count = range(len(qi_names))
+        listofcomb = list(itertools.product(*qi_height))
+        dizionario = {}
+
+        for combi in listofcomb:
+            for index in count:
+                key = qi_names[index]
+                value = combi[index]
+                dizionario[key] = value
+                if index == (len(qi_names) - 1):
+                    self.addVertex(parsing.reparse_attr(dizionario))
+
+        return
 
     # criteria to add edge
     def add_linked_edge(self, qi_name):
@@ -78,23 +95,14 @@ class MyDiGraph(nx.DiGraph):
                                 self.add_edge(w, v)
         return
 
-# passo i qi cosi controllo meno
-#cercare metodo per trovare direttamente nodi
 
 if __name__ == "__main__":
+    qi_height = [[0, 1, 2], [0, 1], [0, 1]]
     qi_names = ["sex", "age", "zipcode"]
     G = MyDiGraph()
-    G.add_node("sex:0;age:0;zipcode:0")
-    G.nodes["sex:0;age:0;zipcode:0"]['is_marked'] = False
-    G.add_node("sex:1;age:0;zipcode:0")
-    G.nodes["sex:1;age:0;zipcode:0"]['is_marked'] = False
-    G.add_node("sex:0;age:1;zipcode:0")
-    G.nodes["sex:0;age:1;zipcode:0"]['is_marked'] = False
-    G.add_node("sex:0;age:2;zipcode:0")
-    G.nodes["sex:0;age:2;zipcode:0"]['is_marked'] = False
-    # G.nodes[0]['comb'] = "s:0,a:0,z:0"
-    # print(G.nodes.data())
-    vertexes = G.getVerticesAttributes()
-    print(G.getVertices())
+    G.add_vertices(qi_height, qi_names)
+    print(G.nodes)
+    print(G)
     G.add_linked_edge(qi_names)
     print(G.getEdges())
+    print(G)
