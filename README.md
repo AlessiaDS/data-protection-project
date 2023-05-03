@@ -7,4 +7,4 @@ The command that needs to be used has the following format:
 + `-o` *"path+name of the file where to save the anonymized table"*
 
 Example:
-`-pt "C:\Users\giamp\PycharmProjects\pythonProject\DP-Project3\tables\db_20.csv" -qi "age" "sex" "zip_code" -dgh "C:\Users\giamp\PycharmProjects\pythonProject\DP-Project3\tables\age_generalization.csv" "C:\Users\giamp\PycharmProjects\pythonProject\DP-Project3\tables\sex_generalization.csv" "C:\Users\giamp\PycharmProjects\pythonProject\DP-Project3\tables\zip_code_generalization.csv" -k 5 -o "db_20_5_incognito.csv"`
+`-pt "/Users/alessiadisanto/Desktop/data-protection-project/Database/db_20.csv" -qi "age" "sex" "zip_code" -dgh "/Users/alessiadisanto/Desktop/data-protection-project/Database/age_generalization.csv" "/Users/alessiadisanto/Desktop/data-protection-project/Database/sex_generalization.csv" "/Users/alessiadisanto/Desktop/data-protection-project/Database/zip_code_generalization.csv" -k 5 -o "db_20_5_incognito.csv"`
