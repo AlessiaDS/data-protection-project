@@ -17,6 +17,9 @@ class MyDiGraph(nx.DiGraph):
 
     def getEdges(self):
         return self.edges
+    
+    def getData(self, a):
+        return self.nodes[a]["data"]
 
     # works with pointer to tuple
     def addEdge(self, c1, c2):
@@ -24,7 +27,19 @@ class MyDiGraph(nx.DiGraph):
 
     def addVertex(self, node):
         self.add_node(node, is_marked=False)
-        return self
+        return self #return not needed
+    
+    def isMarked(self, a):
+        return self.nodes[a]["marked"]
+    
+    def setMark(self, a):
+        self.nodes[a]["marked"] = True
+
+    def setData(self, a, data):
+        self.nodes[a]["data"] = data
+        
+    def isRoot(self,a):
+        return self.in_degree(a) == 0
 
     # Variant from original hasVertex, returns True or False
     def hasVertex(self, a):
@@ -37,6 +52,27 @@ class MyDiGraph(nx.DiGraph):
                 tmp.append(n)
         return tmp
 
+    # previous format: i -> child (+ data related to it)
+    # current: need to add the display of the data related to the children
+    def printOut(self):
+        for i in self.nodes:
+            print("Node: ", i)
+            print("Attributes: ")
+            for j in self.nodes[i]:
+                print("-",j,": ", self.nodes[i][j])
+
+            if self.in_degree(i) != 0:
+                print("Parent: ", list(self.in_edges(i))[0][0], "\nChildren: ", end="")
+            else:
+                print("Parent: Is root\nChildren: ", end="")
+
+            if self.out_degree(i) != 0:
+                for a, b in self.out_edges(i):
+                    print(b, end=" ")
+                print("\n")
+            else:
+                print("None\n")
+    
     def add_vertices(self, qi_height, qi_names):
 
         count = range(len(qi_names))
