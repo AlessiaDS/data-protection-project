@@ -1,4 +1,5 @@
 #To add to Incognito!
+import copy #-----IMPORT NEEDED-----
 
 def at_last(check):
     count = 0
@@ -7,31 +8,47 @@ def at_last(check):
     if count == len(check): return True
     return False
 
-def mono_attr_verify(graph, qi_names, qi_heights, k, dghs, qi_frequency, data):
 
-    # vertex text format "qi_name:lv;qi_name:lv;..."
-    kanon_prev = False
+#-----CHANGED-----
+#TODO: External K-Anon Queue given in Input
+def mono_attr_verify(graph, qi_names, qi_heights, k, dghs, qi_frequency):
+    #Data not needed
+
+    # vertex text format "qi_name1 : lv1 ; qi_name2 : lv2 ;..."
+    prev_kanon = False
+    prev_node = ""
 
     for i in range(len(qi_names)):
-        for j in range(qi_heights[i]):
-            node = str(qi_names[i] + ":" + j)
+        for j in range(qi_heights[qi_names[i]]):
+            node = qi_names[i] + ":" + str(j)
+            print("Added Node: ", node)
             graph.addVertex(node)
-            if not kanon_prev:
-                graph.setData(node, generalize(qi_names, dghs, qi_frequency, data))
+            if not prev_kanon:
+                data=()
+                for n in range(3):
+                    if n == i:
+                        data = data + (j,)
+                    else:
+                        data = data + (0,)
+                graph.setData(node, generalize(qi_names, dghs, qi_frequency, *data))
+                if prev_node != "":
+                    graph.addEdge(prev_node,node)
                 if is_k_anon(graph.getData(node), k):
+                    #print("ADDED to K_Anon")
                     graph.setMark(node)
-                    kanon_prev = True
+                    prev_kanon = True
             else:
+                #print("ADDED to K_Anon")
                 graph.setMark(node)
-                kanon_prev = False
-
+                prev_kanon = False
+            prev_node = node
+        prev_node = ""
     return
 
-#data contains the generalization levels -> combination to generalize to
-def generalize(qi_names, dghs, og_frequency, data):
-    #print("Current <COMB>: ", data)
+#-----CHANGED-----
+def generalize(qi_names, dghs, og_frequency, *data):
 
-    qi_frequency = og_frequency
+    qi_frequency = copy.copy(og_frequency) #shallow copy
 
     # Look up table for the generalized values, to avoid searching in hierarchies:
     generalizations = dict()
@@ -45,6 +62,7 @@ def generalize(qi_names, dghs, og_frequency, data):
         for i in range(len(data)):
             # If QI is going back to genLv 0 then do nothing since it has already been "rolled back" with resetState
             # If old and new level are the same then do nothing once again
+            #print(data[i])
             if data[i] != 0:
                 if qi_sequence[i] in generalizations:
                     # Find directly the generalized value in the look up table:
@@ -57,7 +75,7 @@ def generalize(qi_names, dghs, og_frequency, data):
                             qi_sequence[i], 0,
                             data[i])
                     except KeyError as error:
-                        # print("Error: ",error)
+                        #print("Error: ",error)
                         return
                     if generalized_value[i] is None:
                         # Skip if it's a hierarchy root:
@@ -76,7 +94,6 @@ def generalize(qi_names, dghs, og_frequency, data):
             new_qi_sequence[id] = gen_val
         new_qi_sequence = tuple(new_qi_sequence)
 
-        # TODO: TO GENETALIZE! (0,0,0) IS NOT GENERAL (might actually be already managed by the first "if")
         # If start of cycle no need to change or apply anything
         if data != (0, 0, 0):
             # Check if there is already a tuple like this one:
