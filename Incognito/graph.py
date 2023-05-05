@@ -17,9 +17,6 @@ class MyDiGraph(nx.DiGraph):
 
     def getEdges(self):
         return self.edges
-    
-    def getData(self, a):
-        return self.nodes[a]["data"]
 
     # works with pointer to tuple
     def addEdge(self, c1, c2):
@@ -27,24 +24,18 @@ class MyDiGraph(nx.DiGraph):
 
     def addVertex(self, node):
         self.add_node(node, is_marked=False)
-        return self #return not needed
-    
-    def isMarked(self, a):
-        return self.nodes[a]["marked"]
-    
-    def setMark(self, a):
-        self.nodes[a]["marked"] = True
-
-    def setData(self, a, data):
-        self.nodes[a]["data"] = data
-        
-    def isRoot(self,a):
-        return self.in_degree(a) == 0
+        return self
 
     # Variant from original hasVertex, returns True or False
     def hasVertex(self, a):
         return self.has_node(a)
 
+    def isMarked(self, a):
+        return self.nodes[a]["marked"]
+
+    def setMark(self, a):
+        self.nodes[a]["marked"] = True
+        
     def getRoots(self):
         tmp = []
         for n, d in self.in_degree():
@@ -52,14 +43,20 @@ class MyDiGraph(nx.DiGraph):
                 tmp.append(n)
         return tmp
 
-    # previous format: i -> child (+ data related to it)
-    # current: need to add the display of the data related to the children
+    def getChildren(self, node):
+        tmp_children = self.out_edges(node)
+        children=list()
+        for p,a in tmp_children:
+            children.append(a)
+        return children
+
+
     def printOut(self):
         for i in self.nodes:
             print("Node: ", i)
             print("Attributes: ")
             for j in self.nodes[i]:
-                print("-",j,": ", self.nodes[i][j])
+                print("-", j, ": ", self.nodes[i][j])
 
             if self.in_degree(i) != 0:
                 print("Parent: ", list(self.in_edges(i))[0][0], "\nChildren: ", end="")
@@ -72,21 +69,21 @@ class MyDiGraph(nx.DiGraph):
                 print("\n")
             else:
                 print("None\n")
-    
+
     def add_vertices(self, qi_height, qi_names):
 
         count = range(len(qi_names))
         listofcomb = list(itertools.product(*qi_height))
-        print(listofcomb)
-        dizionario = {}
+        #print(listofcomb)
+        dictionary = {}
 
         for combi in listofcomb:
             for index in count:
                 key = qi_names[index]
                 value = combi[index]
-                dizionario[key] = value
+                dictionary[key] = value
                 if index == (len(qi_names) - 1):
-                    self.addVertex(parsing.reparse_attr(dizionario))
+                    self.addVertex(parsing.reparse_attr(dictionary))
         return
 
     # criteria to add edge

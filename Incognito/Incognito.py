@@ -136,32 +136,65 @@ class _Table:
         count = 1
         while count < len(qi_names)+1:
             if count == 1:
-                # roba Giam
-                #
+                # Monodimensional check
+
+
+
+
                 count = count+1
             else:
                 listofcomb = list(itertools.combinations(qi_names, count))
-                print(listofcomb)
+                #print(listofcomb)
                 comb = 0
                 while comb < len(listofcomb):
                     heightxcomb = list()
+                    qinamesxcomb=list()
                     for hi in list(listofcomb[comb]):
                         #print(heights[hi])
+                        qinamesxcomb.append(hi)
                         heightxcomb.append(heights[hi])
-                    print(heightxcomb)
+                    #print(heightxcomb)
                     G = graph.MyDiGraph()
                     G.add_vertices(heightxcomb, listofcomb[comb])
-                    G.add_linked_edge(listofcomb[comb])
-                    #print(G.getEdges())
-                    #print(G.nodes)
+                    G.add_linked_edge(qinamesxcomb)
+                    #G.printOut()
+
+                    #Search BFS bottom top
+                    queue_node=[]
+                    queue_node.append(G.getRoots())
+                    while True:
+                        current = queue_node.pop(0)
+                        #Check anonimity
+
+                        queue_k_anon= dict()
+                        #[1: ('sex:2')
+                        # 2: ('sex:2;age:4')
+                        # 3: (('sex:2;age:4;zipcode:1'),.....)
+                        # .
+                        # .
+                        # .]
+                        
+                        comb_current = current.split(";")
+                        list_comb_tocheck= list(itertools.combinations(comb_current, count-1))
+                        is_k = True
+                        for c in list_comb_tocheck:
+                            if not c in queue_k_anon[count-1]:
+                                is_k = False
+                                break
+                        if is_k:
+                            queue_k_anon[count].append(current)
+
+                        #break the loop
+                        if not G.getChildren(current):
+                            break
+
+                        for n in G.getChildren(current):
+                            if n in queue_node:
+                                continue
+                            queue_node.append(n)
+                        print("current queue: ",queue_node,"\n")
                     comb = comb + 1
-
-
-
-
                 count = count+1
-
-
 
         # ---------------------------START PART 2 - Write on output file---------------------------
 
