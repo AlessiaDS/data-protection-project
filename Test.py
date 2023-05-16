@@ -251,7 +251,6 @@ class CsvTable(_Table):
         qi_frequency = generate_frequency(self, qi_names)
 
         # ---------------------------START PART 1 - Generalization---------------------------
-
         # GET HEIGHTS OF QI
         qi_heights = list()
 
@@ -266,108 +265,9 @@ class CsvTable(_Table):
         for hi in qi_names:
             heights[hi] = qi_heights[h]
             h = h + 1
-
-        count = 1
-
-        while count < len(qi_names) + 1:
-
-            if count == 1:
-                notk_list = mono_attr_verify(self, qi_names, qi_heights, k, table.dghs, k_anon_queue)
-                if notk_list is None:
-                    # construct the trees of dimension count +1
-                    count = count + 1
-
-                    comb = 0
-
-                    while comb < len(listofcomb):
-
-                        heightxcomb = list()
-                        qinamesxcomb = list()
-
-                        for hi in list(listofcomb[comb]):
-                            qinamesxcomb.append(hi)
-                            heightxcomb.append(heights[hi])
-
-                        notk_list = mono_attr_verify(self, qi_names, qi_heights, k, table.dghs, k_anon_queue)
-
-                        while True:
-                            current = queue_node.pop(0)
-
-                            # TODO searchimg as in the monodimensionality check
-
-                            # break the loop
-                            if not G.getChildren(current):
-                                break
-
-                            for n in G.getChildren(current):
-                                if n in queue_node:
-                                    continue
-                                queue_node.append(n)
-                        comb = comb + 1
-
-                count = count + 1
-
-            else:
-
-                listofcomb = list(itertools.combinations(qi_names, count))
-                comb = 0
-
-                while comb < len(listofcomb):
-
-                    heightxcomb = list()
-                    qinamesxcomb = list()
-
-                    for hi in list(listofcomb[comb]):
-                        qinamesxcomb.append(hi)
-                        heightxcomb.append(heights[hi])
-
-                    G = graph.MyDiGraph()
-                    G.add_vertices(heightxcomb, listofcomb[comb])
-                    G.add_linked_edge(qinamesxcomb)
-                    # G.printOut()
-
-                    # Search BFS bottom top
-                    queue_node = [G.getRoots()]
-
-                    while True:
-
-                        current = queue_node.pop(0)
-
-                        # Check anonymity
-
-                        queue_k_anon = dict()
-                        # [1: ('sex:2')
-                        # 2: ('sex:2;age:4')
-                        # 3: (('sex:2;age:4;zipcode:1'),.....)
-                        # .
-                        # .
-                        # .]
-
-                        comb_current = current.split(";")
-                        list_comb_to_check = list(itertools.combinations(comb_current, count - 1))
-                        is_k = True
-
-                        for c in list_comb_to_check:
-                            if not c in queue_k_anon[count - 1]:
-                                is_k = False
-                                break
-                        if is_k:
-                            queue_k_anon[count].append(current)
-
-                        # break the loop
-                        if not G.getChildren(current):
-                            break
-
-                        for n in G.getChildren(current):
-                            if n in queue_node:
-                                continue
-                            queue_node.append(n)
-
-                        print("current queue: ", queue_node, "\n")
-
-                    comb = comb + 1
-
-                count = count + 1
+        # call the function mono and multi
+        mono_attr_verify(self, qi_names, qi_heights, k, table.dghs, k_anon_queue)
+        multi_attr_verify(qi_names, heights, k_anon_queue)
 
         # ---------------------------START PART 2 - Write on output file---------------------------
 
@@ -439,75 +339,141 @@ def generate_frequency(csvtable, qi_names):
 
 # TODO: INPUT QUEUE FROM OUTSIDE
 def mono_attr_verify(csvtable, qi_names, qi_heights, k, dghs, k_anon_queue):
-    # print("Enter Mono\n")
-    # print("current k:",k)
+
     count = 1
-    comb = 0
+    while count<len(qi_names):
+        # print("Enter Mono\n")
+        # print("current k:",k)
 
-    listofcomb = list(itertools.combinations(qi_names, count))
+        listofcomb = list(itertools.combinations(qi_names, count))
 
-    # vertex text format "qi_name1 : lv1 ; qi_name2 : lv2 ;..."
-    while comb < len(listofcomb):
+        # vertex text format "qi_name1 : lv1 ; qi_name2 : lv2 ;..."
+        comb = 0
+        while comb < len(listofcomb):
 
-        heightxcomb = list()
-        qinamesxcomb = list()
+            heightxcomb = list()
+            qinamesxcomb = list()
 
-        for hi in list(listofcomb[comb]):
-            qinamesxcomb.append(hi)
-            heightxcomb.append(qi_heights[hi])
-
-        # if elementi misti
-        #   continue
-
-        # print("\nCurrent QI: ",qi_names[i])
-        qi_frequency = generate_frequency(csvtable, qinamesxcomb)
-
-        G = graph.MyDiGraph()
-        G.add_vertices(heightxcomb, listofcomb[comb])
-        G.add_linked_edge(qinamesxcomb)
-
-        queue_node = [G.getRoots()]
-
-        while True:
-            current = queue_node.pop(0)
-
-            # TODO searchimg as in the monodimensionality check
+            for hi in list(listofcomb[comb]):
+                qinamesxcomb.append(hi)
+                heightxcomb.append(qi_heights[hi])
+            # if elementi misti if count >1
             if count > 1:
-                to_ignore = True
-                comb_current = current.split(";")
-                list_comb_to_check = list(itertools.combinations(comb_current, count - 1))
-                for c in list_comb_to_check:
-                    if c in k_anon_queue[count - 1]:
-                        to_ignore = False
-                        break
-            if to_ignore == False or count == 1:
-
-                if not G.isMarked(current):
-
-                    if is_k_anon( generalize(qinamesxcomb, dghs, qi_frequency, heightxcomb), k):
-                        k_anon_queue[count].append(current)
-                        G.setMarked(current)
-                        if G.getChildren(current):
-                            for n in G.getChildren(current):
-                                G.setMarked(n)
-                                G.setHereditary(n)
+                if (count -1) not in k_anon_queue:
+                    notfound = True
                 else:
-                    k_anon_queue[count].append(current)
+                    notfound = False
 
-            # break the loop
-            if not G.getChildren(current):
-                break
+            # print("\nCurrent QI: ",qi_names[i])
+            qi_frequency = generate_frequency(csvtable, qinamesxcomb)
 
-            for n in G.getChildren(current):
-                if n in queue_node:
-                    continue
-                queue_node.append(n)
-        comb = comb + 1
+            G = graph.MyDiGraph()
+            G.add_vertices(heightxcomb, listofcomb[comb])
+            G.add_linked_edge(qinamesxcomb)
+
+            queue_node = [G.getRoots()]
+
+            while True:
+                current = queue_node.pop(0)
+
+                # TODO searchimg as in the monodimensionality check
+                to_ignore = False
+                if count > 1 or notfound == False:
+                    to_ignore = True
+                    comb_current = current.split(";")
+                    list_comb_to_check = list(itertools.combinations(comb_current, count - 1))
+                    for c in list_comb_to_check:
+                        if c in k_anon_queue[count - 1]:
+                            to_ignore = False
+                            break
+                if to_ignore == False or count == 1:
+
+                    if not G.isMarked(current):
+
+                        if is_k_anon(generalize(qinamesxcomb, dghs, qi_frequency, heightxcomb), k):
+                            k_anon_queue[count].append(current)
+                            G.setMarked(current)
+                            if G.getChildren(current):
+                                for n in G.getChildren(current):
+                                    G.setMarked(n)
+                                    G.setHereditary(n)
+                    else:
+                        k_anon_queue[count].append(current)
+
+                # break the loop
+                if not G.getChildren(current):
+                    break
+
+                for n in G.getChildren(current):
+                    if n in queue_node:
+                        continue
+                    queue_node.append(n)
+            comb = comb + 1
+        count = count + 1
+
     return
 
 
 # TODO: Verify which steps and functions are needed in order to achieve this funtion
-def multi_attr_verify(qi_names, qi_heights, k, atr, dghs, qi_frequency, data):
+def multi_attr_verify(qi_names, heights, k_anon_queue):
+    count = len(k_anon_queue) + 1
+    while count <= len(qi_names):
+        listofcomb = list(itertools.combinations(qi_names, count))
+        comb = 0
+
+        while comb < len(listofcomb):
+
+            heightxcomb = list()
+            qinamesxcomb = list()
+
+            for hi in list(listofcomb[comb]):
+                qinamesxcomb.append(hi)
+                heightxcomb.append(heights[hi])
+            G = graph.MyDiGraph()
+            G.add_vertices(heightxcomb, listofcomb[comb])
+            G.add_linked_edge(qinamesxcomb)
+
+            # Search BFS bottom top
+            queue_node = [G.getRoots()]
+
+            while True:
+
+                current = queue_node.pop(0)
+
+                # Check anonymity
+
+                queue_k_anon = dict()
+                # [1: ('sex:2')
+                # 2: ('sex:2;age:4')
+                # 3: (('sex:2;age:4;zipcode:1'),.....)
+                # .
+                # .
+                # .]
+
+                comb_current = current.split(";")
+                list_comb_to_check = list(itertools.combinations(comb_current, count - 1))
+                is_k = True
+
+                for c in list_comb_to_check:
+                    if not c in queue_k_anon[count - 1]:
+                        is_k = False
+                        break
+                if is_k:
+                    queue_k_anon[count].append(current)
+
+                # break the loop
+                if not G.getChildren(current):
+                    break
+
+                for n in G.getChildren(current):
+                    if n in queue_node:
+                        continue
+                    queue_node.append(n)
+
+                print("current queue: ", queue_node, "\n")
+
+            comb = comb + 1
+        count = count + 1
     return
 
 
@@ -524,7 +490,7 @@ def generalize(qi_names, dghs, og_frequency, *data):
 
     # Look up table for the generalized values, to avoid searching in hierarchies:
     generalizations = dict()
-    # Generalized value to apply for the needed lables
+    # Generalized value to apply for the needed labels
     generalized_value = dict()
     # Note: using the list of keys since the dictionary is changed in size at runtime
     # and it can't be used as an iterator:
@@ -565,7 +531,7 @@ def generalize(qi_names, dghs, og_frequency, *data):
                 generalizations[i] = generalized_value[i]
 
         # Skip if header of Table
-        if qi_sequence == None: continue
+        if qi_sequence is None: continue
 
         # Tuple with generalized value:
         new_qi_sequence = list(qi_sequence)
@@ -574,7 +540,6 @@ def generalize(qi_names, dghs, og_frequency, *data):
             new_qi_sequence[id] = gen_val
         new_qi_sequence = tuple(new_qi_sequence)
 
-        # TODO: TO GENETALIZE! (0,0,0) IS NOT GENERAL (might actually be already managed by the first "if")
         # If start of cycle no need to change or apply anything
         # Check if there is already a tuple like this one:
         if new_qi_sequence in qi_frequency:
