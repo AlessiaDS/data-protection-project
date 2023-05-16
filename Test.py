@@ -414,7 +414,6 @@ def mono_attr_verify(csvtable, qi_names, qi_heights, k, dghs, k_anon_queue):
     return
 
 
-# TODO: Verify which steps and functions are needed in order to achieve this funtion
 def multi_attr_verify(qi_names, heights, k_anon_queue):
     count = len(k_anon_queue) + 1
     while count <= len(qi_names):
@@ -442,7 +441,6 @@ def multi_attr_verify(qi_names, heights, k_anon_queue):
 
                 # Check anonymity
 
-                queue_k_anon = dict()
                 # [1: ('sex:2')
                 # 2: ('sex:2;age:4')
                 # 3: (('sex:2;age:4;zipcode:1'),.....)
@@ -455,11 +453,11 @@ def multi_attr_verify(qi_names, heights, k_anon_queue):
                 is_k = True
 
                 for c in list_comb_to_check:
-                    if not c in queue_k_anon[count - 1]:
+                    if not c in k_anon_queue[count - 1]:
                         is_k = False
                         break
                 if is_k:
-                    queue_k_anon[count].append(current)
+                    k_anon_queue[count].append(current)
 
                 # break the loop
                 if not G.getChildren(current):
@@ -477,7 +475,6 @@ def multi_attr_verify(qi_names, heights, k_anon_queue):
     return
 
 
-# TODO: CHANGE DIMENSION OF QI_NAMES TO CHECK SINGLE ATTRIBUTE
 # data contains the generalization levels -> combination to generalize to
 def generalize(qi_names, dghs, og_frequency, *data):
     # print("\nEnter Gen")
