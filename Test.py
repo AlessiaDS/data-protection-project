@@ -213,7 +213,7 @@ class CsvTable(_Table):
             raise
 
     # ---------------------------BEGINNING---------------------------
-    def anonymize(self, qi_names: list, k: int, output: str, v=True):
+    def anonymize(self, qi_names: list, k: int, v=True):
 
         """
             Writes a k-anonymous representation of this table on a new file. The maximum number of
@@ -266,36 +266,8 @@ class CsvTable(_Table):
             heights[hi] = qi_heights[h]
             h = h + 1
         # call the function mono and multi
-        mono_attr_verify(self, qi_names, qi_heights, k, table.dghs, k_anon_queue)
+        mono_attr_verify(self, qi_names, heights, k, table.dghs, k_anon_queue)
         multi_attr_verify(qi_names, heights, k_anon_queue)
-
-        # ---------------------------START PART 2 - Write on output file---------------------------
-
-        self._debug("[DEBUG] Suppressing max k non k-anonymous tuples...")
-        # Drop tuples which occur less than k times:
-        '''for qi_sequence, data in qi_frequency.items():
-                if data[0] < k:
-                    qi_frequency.pop(qi_sequence)'''
-
-        # Start to read the table file from the start:
-        self.table.seek(0)
-
-        for i, row in enumerate(self.table):
-
-            table_row = self._get_values(row, list(self.attributes), i)
-
-            # Skip this row if it must be ignored:
-            if table_row is None:
-                continue
-
-            # Find sequence corresponding to this row index:
-            for qi_sequence in qi_frequency:
-                if i in qi_frequency[qi_sequence][1]:  # if index row is in the set of indexes
-                    line = self._set_values(table_row, qi_sequence, qi_names)
-                    print(line, file=output, end="")
-                    break
-
-        output.close()
 
 
 # :param table: table to check anonymization
@@ -337,29 +309,43 @@ def generate_frequency(csvtable, qi_names):
     return qi_frequency
 
 
-# TODO: INPUT QUEUE FROM OUTSIDE
+# TODO: find min of generalization
 def mono_attr_verify(csvtable, qi_names, qi_heights, k, dghs, k_anon_queue):
+    """
+            Anonimyze monodimensional graph and eventually n-dimensional ones.
 
+            :param cvstable:            Path to the table to anonymize.
+            :param qi_names:            List whose values are names of QI
+            :param qi_heights:          Dictionary containing the heights of every QI, in a range format.
+            :param k:                   Level of anonymity.
+            :param dghs:                Dictionary whose values are paths to DGH files and whose keys
+                                        are the corresponding attribute names.
+            :param k_anon_queue:        Dictionary containing the k anonymous combination each n-dimensions.
+            """
+    print(qi_heights)
     count = 1
-    while count<len(qi_names):
-        # print("Enter Mono\n")
-        # print("current k:",k)
 
+    while count < len(qi_names):
+        # k_anon_queue[count] = list()
         listofcomb = list(itertools.combinations(qi_names, count))
+        # print("Current size of Vertices",count)
 
         # vertex text format "qi_name1 : lv1 ; qi_name2 : lv2 ;..."
         comb = 0
-        while comb < len(listofcomb):
+        notfound=True
+        found_k_anon = False
 
+        while comb < len(listofcomb):
+            # print(comb,"indice")
+            found_k_anon = False
             heightxcomb = list()
             qinamesxcomb = list()
 
             for hi in list(listofcomb[comb]):
                 qinamesxcomb.append(hi)
                 heightxcomb.append(qi_heights[hi])
-            # if elementi misti if count >1
             if count > 1:
-                if (count -1) not in k_anon_queue:
+                if (count - 1) not in k_anon_queue:
                     notfound = True
                 else:
                     notfound = False
@@ -370,34 +356,56 @@ def mono_attr_verify(csvtable, qi_names, qi_heights, k, dghs, k_anon_queue):
             G = graph.MyDiGraph()
             G.add_vertices(heightxcomb, listofcomb[comb])
             G.add_linked_edge(qinamesxcomb)
-
-            queue_node = [G.getRoots()]
+            # G.printOut()
+            queue_node = G.getRoots()
 
             while True:
                 current = queue_node.pop(0)
-
-                # TODO searchimg as in the monodimensionality check
+                # current = current[0]
+                print("Current Vertex: ", current)
                 to_ignore = False
                 if count > 1 or notfound == False:
                     to_ignore = True
                     comb_current = current.split(";")
                     list_comb_to_check = list(itertools.combinations(comb_current, count - 1))
+                    # print("content to check",list_comb_to_check)
                     for c in list_comb_to_check:
                         if c in k_anon_queue[count - 1]:
                             to_ignore = False
                             break
                 if to_ignore == False or count == 1:
-
+                    #print("Should be here")
+                    # print('ok', G.isMarked(current))
                     if not G.isMarked(current):
+                        # print("entered")
+                        data = tuple()
+                        tmp = parsing.parse_attr(current)
+                        # print(tmp)
 
-                        if is_k_anon(generalize(qinamesxcomb, dghs, qi_frequency, heightxcomb), k):
-                            k_anon_queue[count].append(current)
+                        for i in tmp:
+                            data = data + (int(tmp[i]),)
+
+                        #print("Content of freq", qi_frequency)
+
+                        # print("Data",data)
+                        # print("Content of k_anon_queue: ",k_anon_queue)
+                        if is_k_anon(generalize(qinamesxcomb, dghs, qi_frequency, *data), k):
+                            # print(generalize(qinamesxcomb, dghs, qi_frequency, *data))
+                            found_k_anon = True
+                            print(current, "is K-Anon")
+                            if k_anon_queue.get(count):  # "None" is counted as "False"
+                                k_anon_queue[count].append(current)
+                            else:
+                                k_anon_queue[count] = [current]
+                            # print(k_anon_queue)
                             G.setMarked(current)
                             if G.getChildren(current):
                                 for n in G.getChildren(current):
                                     G.setMarked(n)
                                     G.setHereditary(n)
+
                     else:
+                        print(current, "is K-Anon")
                         k_anon_queue[count].append(current)
 
                 # break the loop
@@ -408,7 +416,12 @@ def mono_attr_verify(csvtable, qi_names, qi_heights, k, dghs, k_anon_queue):
                     if n in queue_node:
                         continue
                     queue_node.append(n)
+
             comb = comb + 1
+
+        if found_k_anon:
+            return
+
         count = count + 1
 
     return
@@ -428,16 +441,18 @@ def multi_attr_verify(qi_names, heights, k_anon_queue):
             for hi in list(listofcomb[comb]):
                 qinamesxcomb.append(hi)
                 heightxcomb.append(heights[hi])
+
             G = graph.MyDiGraph()
             G.add_vertices(heightxcomb, listofcomb[comb])
             G.add_linked_edge(qinamesxcomb)
 
             # Search BFS bottom top
-            queue_node = [G.getRoots()]
+            queue_node = G.getRoots()
 
             while True:
 
-                current = queue_node.pop(0)
+                current = str(queue_node.pop(0))
+                print("Current Index: ",current)
 
                 # Check anonymity
 
@@ -449,15 +464,24 @@ def multi_attr_verify(qi_names, heights, k_anon_queue):
                 # .]
 
                 comb_current = current.split(";")
+                #print(comb_current)
                 list_comb_to_check = list(itertools.combinations(comb_current, count - 1))
+                # [('age:0', 'sex:0'), ('age:0', 'zip_code:0'), ('sex:0', 'zip_code:0')] at count =3
+                print(list_comb_to_check)
                 is_k = True
 
                 for c in list_comb_to_check:
-                    if not c in k_anon_queue[count - 1]:
+                    #print("current element: ", c[0])
+
+                    if c[0] not in k_anon_queue[count - 1]:
                         is_k = False
-                        break
                 if is_k:
-                    k_anon_queue[count].append(current)
+
+                    print('entered')
+                    if k_anon_queue.get(count):  # "None" is counted as "False"
+                        k_anon_queue[count].append(current)
+                    else:
+                        k_anon_queue[count] = [current]
 
                 # break the loop
                 if not G.getChildren(current):
@@ -468,11 +492,11 @@ def multi_attr_verify(qi_names, heights, k_anon_queue):
                         continue
                     queue_node.append(n)
 
-                print("current queue: ", queue_node, "\n")
-
+                #print("current queue: ", queue_node, "\n")
             comb = comb + 1
+
         count = count + 1
-    return
+    return print(k_anon_queue)
 
 
 # data contains the generalization levels -> combination to generalize to
@@ -481,6 +505,8 @@ def generalize(qi_names, dghs, og_frequency, *data):
     # print("Current <COMB>: ", data)
 
     if all(n == 0 for n in data):
+        #print("Current qi_names: ", qi_names)
+        #print("Res qi_frequency: ", og_frequency)
         return copy.copy(og_frequency)
 
     qi_frequency = copy.copy(og_frequency)  # shallow copy
@@ -554,6 +580,7 @@ def generalize(qi_names, dghs, og_frequency, *data):
             # Add new tuple and remove the old one:
             qi_frequency[new_qi_sequence] = qi_frequency.pop(qi_sequence)
 
+    # print("Current qi_names: ", qi_names)
     # print("Res qi_frequency: ",qi_frequency)
     return qi_frequency
 
@@ -562,28 +589,28 @@ if __name__ == "__main__":
 
     dgh_paths = dict()
 
-    table_path = "/home/novi/Documents/Uni/Year3/IDS/workspace/DP-Project6/tables/db_200.csv"
+    table_path = "/Users/alessiadisanto/Desktop/Incognito/Database/db_20.csv"
 
     k = 2
 
     qis = ("age", "sex", "zip_code")
 
     gen_paths = list()
-    gen_paths.append("/home/novi/Documents/Uni/Year3/IDS/workspace/DP-Project6/tables/age_generalization.csv")
-    gen_paths.append("/home/novi/Documents/Uni/Year3/IDS/workspace/DP-Project6/tables/sex_generalization.csv")
-    gen_paths.append("/home/novi/Documents/Uni/Year3/IDS/workspace/DP-Project6/tables/zip_code_generalization.csv")
+    gen_paths.append("/Users/alessiadisanto/Desktop/Incognito/Database/age_generalization.csv")
+    gen_paths.append("/Users/alessiadisanto/Desktop/Incognito/Database/sex_generalization.csv")
+    gen_paths.append("/Users/alessiadisanto/Desktop/Incognito/Database/zip_code_generalization.csv")
 
     for i, qi_name in enumerate(qis):
         dgh_paths[qi_name] = gen_paths[i]
     table = CsvTable(table_path, dgh_paths)
 
-    try:
-        table.anonymize(qis, k)
-    except KeyError as error:
-        if len(error.args) > 0:
-            print("[ERROR] Quasi Identifier", error.args[0], "is not valid.")
-        else:
-            print("[ERROR] A Quasi Identifier is not valid.")
+    #try:
+    table.anonymize(qis, k)
+    #except KeyError as error:
+     #   if len(error.args) > 0:
+      #      print("[ERROR] Quasi Identifier", error.args[0], "is not valid.")
+       # else:
+        #    print("[ERROR] A Quasi Identifier is not valid.")
     '''try:
         res = table.anonymize(qis, k)
     except KeyError as error:
