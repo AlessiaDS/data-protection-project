@@ -24,6 +24,7 @@ class MyDiGraph(nx.DiGraph):
 
     def addVertex(self, node):
         self.add_node(node, is_marked=False)
+        self.add_node(node, is_hereditary=False)
         return self
 
     # Variant from original hasVertex, returns True or False
@@ -31,10 +32,16 @@ class MyDiGraph(nx.DiGraph):
         return self.has_node(a)
 
     def isMarked(self, a):
-        return self.nodes[a]["marked"]
+        return self.nodes[a]["is_marked"]
 
-    def setMark(self, a):
-        self.nodes[a]["marked"] = True
+    def isHereditary(self, a):
+        return self.nodes[a]["is_hereditary"]
+
+    def setMarked(self, a):
+        self.nodes[a]["is_marked"] = True
+
+    def setHereditary(self, a):
+        self.nodes[a]["is_hereditary"] = True
         
     def getRoots(self):
         tmp = []
@@ -45,11 +52,10 @@ class MyDiGraph(nx.DiGraph):
 
     def getChildren(self, node):
         tmp_children = self.out_edges(node)
-        children=list()
+        children = list()
         for p,a in tmp_children:
             children.append(a)
         return children
-
 
     def printOut(self):
         for i in self.nodes:
@@ -74,7 +80,6 @@ class MyDiGraph(nx.DiGraph):
 
         count = range(len(qi_names))
         listofcomb = list(itertools.product(*qi_height))
-        #print(listofcomb)
         dictionary = {}
 
         for combi in listofcomb:
@@ -106,11 +111,11 @@ class MyDiGraph(nx.DiGraph):
 
         for s in attributes_s:
             comb = parsing.parse_attr(s)
+
             combs[s] = comb
-        #print(combs)
 
         vertices = self.getVertices()
-
+        temp = 0
         temp_combs = combs.copy()
         for q in qi_name:
             for c in combs:
@@ -134,8 +139,9 @@ if __name__ == "__main__":
     qi_names = ["sex"]
     G = MyDiGraph()
     G.add_vertices(qi_height, qi_names)
-    print(G.nodes)
-    print(G)
+    #print(G.nodes)
     G.add_linked_edge(qi_names)
-    print(G.getEdges())
-    print(G)
+   # print(G.getEdges())
+    #print(G)
+    print(G.setMarked("sex:0"))
+
