@@ -464,8 +464,9 @@ def multi_attr_verify(qi_names, heights, k_anon_queue):
                 # .]
 
                 comb_current = current.split(";")
-                #print(comb_current)
+                # print(comb_current)
                 list_comb_to_check = list(itertools.combinations(comb_current, count - 1))
+                list_comb_to_check=parsing.parse_multi(list_comb_to_check)
                 # [('age:0', 'sex:0'), ('age:0', 'zip_code:0'), ('sex:0', 'zip_code:0')] at count =3
                 print(list_comb_to_check)
                 is_k = True
@@ -473,7 +474,7 @@ def multi_attr_verify(qi_names, heights, k_anon_queue):
                 for c in list_comb_to_check:
                     #print("current element: ", c[0])
 
-                    if c[0] not in k_anon_queue[count - 1]:
+                    if c not in k_anon_queue[count - 1]:
                         is_k = False
                 if is_k:
 
