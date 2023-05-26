@@ -1,1 +1,15 @@
+Db 20 K 2  Done in 2.84 seconds (0.047 minutes (0.00 hours))
+Db 20 K 3  Done in 3.01 seconds (0.050 minutes (0.00 hours))
+Db 20 K 4 Done in 2.87 seconds (0.048 minutes (0.00 hours))
+Db 20 k 5  Done in 2.97 seconds (0.049 minutes (0.00 hours))
+
+Db 100 K 2  Done in 11.68 seconds (0.195 minutes (0.00 hours))
+Db 100 K 3  Done in 11.03 seconds (0.184 minutes (0.00 hours))
+Db 100 K 4  Done in 10.84 seconds (0.181 minutes (0.00 hours))
+Db 100 K 5 Done in 12.62 seconds (0.210 minutes (0.00 hours))
+
+Db 200 K 2  Done in 20.62 seconds (0.344 minutes (0.01 hours))
+Db 200 K 3  Done in 21.55 seconds (0.359 minutes (0.01 hours))
+Db 200 K 4  Done in 21.18 seconds (0.353 minutes (0.01 hours))
+Db 200 K 5  Done in 20.83 seconds (0.347 minutes (0.01 hours))
 
