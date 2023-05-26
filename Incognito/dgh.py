@@ -91,7 +91,7 @@ class _DGH:
             else:
                 current = node
                 for i in range(jumps):
-                    if current.parent is None: return None #return error
+                    if current.parent is None: return None # return error
                     current = current.parent
                 return current.data
 
@@ -129,6 +129,11 @@ class CsvDGH(_DGH):
             raise
 
     def get_tree_height(self):
+        """
+        Function to get the height of the generalization tree
+
+        :return: tree's height
+        """
         if len(self.hierarchies) == 0:
             return 0
 

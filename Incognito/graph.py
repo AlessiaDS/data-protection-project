@@ -1,5 +1,4 @@
 import itertools
-
 import networkx as nx
 import parsing
 
@@ -97,7 +96,6 @@ class MyDiGraph(nx.DiGraph):
         chars = "({})' "
 
         attributes = self.getVerticesAttributes()
-        #print(attributes)
         list(attributes)
         attributes_s = []
 
@@ -132,16 +130,3 @@ class MyDiGraph(nx.DiGraph):
                             if w == c:
                                 self.add_edge(w, v)
         return
-
-
-if __name__ == "__main__":
-    qi_height = [[0, 1, 2]]
-    qi_names = ["sex"]
-    G = MyDiGraph()
-    G.add_vertices(qi_height, qi_names)
-    #print(G.nodes)
-    G.add_linked_edge(qi_names)
-   # print(G.getEdges())
-    #print(G)
-    print(G.setMarked("sex:0"))
-

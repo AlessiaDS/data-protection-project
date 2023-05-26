@@ -1,7 +1,11 @@
-import itertools
-
-
 def parse_attr(st):
+    """
+    Function to parse a string containing the combination of QI into a dictionary
+    :param st:                  string containing the QI combination in the following format:
+                                "qi1 : lv ; qi2 : lv; ..."
+    :return:                    dictionary containing the QI and their generalization levels in the following format:
+                                {st: {"qi1": lv, "qi2": lv ..}}
+    """
     comb = {}
     levels = st.split(";")
     for level in levels:
@@ -11,6 +15,13 @@ def parse_attr(st):
 
 
 def reparse_attr(dict_attr):
+    """
+    Function to parse a dictionary containing the combination of QI into a string
+    :param dict_attr:           dictionary containing the QI and their generalization levels in the following format:
+                                {"qi1": lv, "qi2": lv ..}
+    :return:                    string containing the QI combination in the following format:
+                                "qi1 : lv ; qi2 : lv; ..."
+    """
     string_attr = ""
     for k in dict_attr.keys():
         temp_str = string_attr
@@ -20,6 +31,15 @@ def reparse_attr(dict_attr):
 
 
 def parse_multi(list_c):
+    """
+    Function used to join element of a list containing the QI combination into one string
+
+    :param list_c:              list of combinations in the following format:
+                                (("qi1 : lv" , "qi2: lv"), ...)
+
+    :return:                    list of combinations in the following format:
+                                (("qi1 : lv ; qi2: lv;..."), ...)
+    """
     new_qi_list = list()
     for c in list_c:
         string_attr = ""
@@ -30,18 +50,6 @@ def parse_multi(list_c):
             string_attr = temp_str + str_tmp + ";"
             q = q + 1
         final_string_attr = string_attr[:-1]
-        print(final_string_attr)
-
         new_qi_list.append(final_string_attr)
     list_c = new_qi_list
     return list_c
-
-
-if __name__ == "__main__":
-    current = 'sex:2;age:4;zipcode:1'
-    comb_current = current.split(";")
-    print(comb_current)
-    list_comb_to_check = list(itertools.combinations(comb_current, 2))
-    print(list_comb_to_check)
-    list_comb_to_check = parse_multi(list_comb_to_check)
-    print(list_comb_to_check)
